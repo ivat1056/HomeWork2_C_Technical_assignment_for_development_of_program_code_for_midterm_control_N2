@@ -105,7 +105,6 @@ void append(list1 *list_ptr, int value)
     list_ptr->size++;
 }
 
-
 void print_list(list1 *list_ptr)
 {
     if (list_ptr->head == NULL) 
@@ -113,29 +112,23 @@ void print_list(list1 *list_ptr)
         printf("print_list(): List is empty\n");
         return;
     }
-    
-    l_elem *temp = list_ptr->head;
-    printf("print_list(): ");
-    
-    do 
-    {
-        printf("%d ", temp->value);
-        temp = temp->next;
-    } 
-    while (temp != list_ptr->head);
-    
+        l_elem *temp = list_ptr->head;
+        printf("print_list(): ");
+        do 
+        {
+            printf("%d ", temp->value);
+            temp = temp->next;
+        } 
+        while (temp != list_ptr->head);
     printf("\n");
 }
 
 void clear_list(list1 *list_ptr)
 {
     if (list_ptr->head == NULL) return;
-    
     l_elem *current = list_ptr->head;
     l_elem *next_elem;
-    
     printf("clear_elements: ");
-    
     do 
     {
         next_elem = current->next;
@@ -144,13 +137,10 @@ void clear_list(list1 *list_ptr)
         current = next_elem;
     } 
     while (current != list_ptr->head);
-    
     printf("\n");
-    
     list_ptr->head = NULL;
     list_ptr->size = 0;
 }
-
 
 int get_by_index(list1 *list_ptr, int index)
 {
@@ -159,14 +149,11 @@ int get_by_index(list1 *list_ptr, int index)
         printf("get_by_index(%d): List is empty\n", index);
         return 0;
     }
-
     int original_index = index;
     if (index < 0) 
     {
         index = list_ptr->size + index;
     }
-
-    // Проверка границ индекса
     if ( index >= list_ptr->size) 
     {
         printf("get_by_index(%d): Index out of range (size of list: %d)\n", original_index, list_ptr->size);
@@ -177,13 +164,11 @@ int get_by_index(list1 *list_ptr, int index)
         printf("get_by_index(%d): Index out of range (size of list: -%d)\n", original_index, list_ptr->size);
         return 0;
     }
-    // Поиск элемента по индексу
     l_elem *current_elem = list_ptr->head;
     for (int i = 0; i < index; i++) 
     {
         current_elem = current_elem->next;
     }
-    
     return current_elem->value;
 }
 void delete_by_index(list1 *list_ptr, int index) 
@@ -193,42 +178,36 @@ void delete_by_index(list1 *list_ptr, int index)
         printf("delete_by_index(%d): List is empty\n", index);
         return;
     }
-
     int original_index = index;
-
+    int size = list_ptr->size;
     if (index < 0) 
     {
-        index = list_ptr->size + index;
+        index = size + index;
     }
-
-    if (index < 0 || index >= list_ptr->size) 
+    if (index < 0 || index >= size) 
     {
         printf("delete_by_index(%d): Index out of range\n", original_index);
         return;
     }
-
     l_elem *temp = list_ptr->head;
     l_elem *prev = NULL;
-
     if (index == 0) 
     {
-        if (list_ptr->size == 1) 
+        if (size == 1) 
         {
-            printf("delete_by_index(%d): %d\n", index, temp->value);
             free(temp);
             list_ptr->head = NULL;
         } 
         else 
         {
-            while (temp->next != list_ptr->head) 
+            l_elem *last = list_ptr->head;
+            while (last->next != list_ptr->head) 
             {
-                temp = temp->next;
+                last = last->next;
             }
-            l_elem *to_delete = list_ptr->head;
             list_ptr->head = list_ptr->head->next;
-            temp->next = list_ptr->head;
-            printf("delete_by_index(%d): %d\n", index, to_delete->value);
-            free(to_delete);
+            last->next = list_ptr->head;
+            free(temp);
         }
     } 
     else 
@@ -242,118 +221,141 @@ void delete_by_index(list1 *list_ptr, int index)
         printf("delete_by_index(%d): %d\n", index, temp->value);
         free(temp);
     }
-    
     list_ptr->size--;
 }
-void delete_all_odd(list1 *list_ptr)
+
+void delete_all_odd(list1 *list_ptr) 
 {
-    if (list_ptr->head == NULL) return;
-
-    l_elem *temp = list_ptr->head;
-    l_elem *prev = NULL;
-    int initial_size = list_ptr->size;
-
-    do 
+    if (list_ptr->head == NULL) 
     {
-        if (temp->value % 2 != 0) 
+        return; 
+    }
+    l_elem *current = list_ptr->head;
+    l_elem *prev = NULL;
+    l_elem *start = NULL;
+    int deleted = 0;
+    while (current != NULL && current->value %2 != 0) 
+    {
+        l_elem *to_delete = current;
+        if (current == list_ptr->head) 
         {
-            if (temp == list_ptr->head) 
-            {
-                if (list_ptr->size == 1) 
-                {
-                    printf("delete_by_index(%d): %d\n", 0, temp->value);
-                    free(temp);
-                    list_ptr->head = NULL;
-                    list_ptr->size = 0;
-                    return;
-                } 
-                else 
-                {
-                    l_elem *last = list_ptr->head;
-                    while (last->next != list_ptr->head) 
-                    {
-                        last = last->next;
-                    }
-                    list_ptr->head = temp->next;
-                    last->next = list_ptr->head;
-                    printf("delete_by_index(%d): %d\n", 0, temp->value);
-                    free(temp);
-                    temp = list_ptr->head;
-                    list_ptr->size--;
-                    continue;
-                }
-            } 
-            else 
-            {
-                prev->next = temp->next;
-                printf("delete_by_index(%d): %d\n", 0, temp->value);
-                free(temp);
-                temp = prev->next;
-                list_ptr->size--;
-                continue;
-            }
+            list_ptr->head = current->next;
+        }
+        if (list_ptr->head == NULL) 
+        {
+            list_ptr->head = NULL;
         } 
         else 
         {
-            prev = temp;
-            temp = temp->next;
-        }
-    } 
-    while (temp != list_ptr->head);
-}
-void delete_all_even(list1 *list_ptr)
-{
-    if (list_ptr->head == NULL) return;
-
-    l_elem *temp = list_ptr->head;
-    l_elem *prev = NULL;
-    int initial_size = list_ptr->size;
-
-    do 
-    {
-        if (temp->value % 2 == 0) 
-        {
-            if (temp == list_ptr->head) 
+            l_elem *last = list_ptr->head;
+            while (last->next != to_delete) 
             {
-                if (list_ptr->size == 1) 
-                {
-                    printf("delete_by_index(%d): %d\n", 0, temp->value);
-                    free(temp);
-                    list_ptr->head = NULL;
-                    list_ptr->size = 0;
-                    return;
-                } 
-                else 
-                {
-                    l_elem *last = list_ptr->head;
-                    while (last->next != list_ptr->head) 
-                    {
-                        last = last->next;
-                    }
-                    list_ptr->head = temp->next;
-                    last->next = list_ptr->head;
-                    printf("delete_by_index(%d): %d\n", 0, temp->value);
-                    free(temp);
-                    temp = list_ptr->head;
-                    list_ptr->size--;
-                    continue;
-                }
-            } 
-            else 
-            {
-                prev->next = temp->next;
-                printf("delete_by_index(%d): %d\n", 0, temp->value);
-                free(temp);
-                temp = prev->next;
-                list_ptr->size--;
-                continue;
+                last = last->next;
             }
+            last->next = list_ptr->head;
+        }
+        current = current->next;
+        free(to_delete);
+        list_ptr->size--;
+        deleted = 1;
+    }
+    if (list_ptr->head != NULL) 
+    {
+        prev = list_ptr->head;
+        current = list_ptr->head->next;
+    }
+    while (current != list_ptr->head) 
+    {
+        if (current->value %2 != 0) 
+        {
+            l_elem *to_delete = current;
+            prev->next = current->next;
+            current = current->next;
+            free(to_delete);
+            list_ptr->size--;
+            deleted = 1;
         } 
         else 
         {
-            prev = temp;
-            temp = temp->next;
+            prev = current;
+            current = current->next;
         }
-    } 
-    while (temp != list_ptr->head);
+    }
+    if (deleted == 0) 
+    {
+        printf("delete_all_odd: No elements were deleted\n");
+    }
 }
+
+void delete_all_even(list1 *list_ptr) 
+{
+    if (list_ptr->head == NULL) 
+    {
+        return; 
+    }
+    l_elem *current = list_ptr->head;
+    l_elem *prev = NULL;
+    l_elem *start = list_ptr->head;
+    int deleted = 0;
+    while (current != NULL && (current->value % 2 == 0)) 
+    {
+        l_elem *to_delete = current;
+        if (current == list_ptr->head) 
+        {
+            list_ptr->head = current->next;
+            if (list_ptr->head == to_delete) 
+            {
+                list_ptr->head = NULL;
+            } 
+            else 
+            {
+                l_elem *last = list_ptr->head;
+                while (last->next != to_delete) 
+                {
+                    last = last->next;
+                }
+                last->next = list_ptr->head;
+            }
+            current = list_ptr->head;
+        } 
+        else 
+        {
+            prev->next = current->next;
+            current = current->next;
+        }
+        free(to_delete);
+        list_ptr->size--;
+        deleted = 1;
+    }
+
+    if (list_ptr->head == NULL) 
+    {
+        return;
+    }
+    prev = list_ptr->head;
+    current = list_ptr->head ? list_ptr->head->next : NULL;
+    while (current != start) 
+    {
+        if (current->value % 2 == 0) 
+        {
+            l_elem *to_delete = current;
+            prev->next = current->next;
+            current = current->next;
+            free(to_delete);
+            list_ptr->size--;
+            deleted = 1;
+        } 
+        else 
+        {
+            prev = current;
+            current = current->next;
+        }
+    }
+    if (deleted == 0) 
+    {
+        printf("delete_all_even: No elements were deleted\n");
+    }
+}
+
+
+
