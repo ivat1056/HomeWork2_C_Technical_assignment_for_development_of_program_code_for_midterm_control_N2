@@ -154,16 +154,12 @@ int get_by_index(list1 *list_ptr, int index)
     {
         index = list_ptr->size + index;
     }
-    if ( index >= list_ptr->size) 
+    if ( index < 0 || index >= list_ptr->size) 
     {
         printf("get_by_index(%d): Index out of range (size of list: %d)\n", original_index, list_ptr->size);
         return 0;
     }
-    if (index <= 0) 
-    {
-        printf("get_by_index(%d): Index out of range (size of list: -%d)\n", original_index, list_ptr->size);
-        return 0;
-    }
+    
     l_elem *current_elem = list_ptr->head;
     for (int i = 0; i < index; i++) 
     {
@@ -175,7 +171,6 @@ void delete_by_index(list1 *list_ptr, int index)
 {
     if (list_ptr->head == NULL) 
     {
-        printf("delete_by_index(%d): List is empty\n", index);
         return;
     }
     int original_index = index;
@@ -218,7 +213,6 @@ void delete_by_index(list1 *list_ptr, int index)
             temp = temp->next;
         }
         prev->next = temp->next;
-        printf("delete_by_index(%d): %d\n", index, temp->value);
         free(temp);
     }
     list_ptr->size--;
