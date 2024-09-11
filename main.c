@@ -101,7 +101,6 @@ void append(list1 *list_ptr, int value)
         temp->next = new_elem;
         new_elem->next = list_ptr->head;
     }
-    
     list_ptr->size++;
 }
 
@@ -154,12 +153,11 @@ int get_by_index(list1 *list_ptr, int index)
     {
         index = list_ptr->size + index;
     }
-    if ( index < 0 || index >= list_ptr->size) 
+    if ( (index < 0) || (index >= list_ptr->size)) 
     {
         printf("get_by_index(%d): Index out of range (size of list: %d)\n", original_index, list_ptr->size);
         return 0;
     }
-    
     l_elem *current_elem = list_ptr->head;
     for (int i = 0; i < index; i++) 
     {
